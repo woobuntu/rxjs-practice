@@ -1,0 +1,18 @@
+{
+  "name": "rxjs-practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/woobuntu/rxjs-practice.git",
+  "author": "in uh, lee <boutime2017@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^7.4.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.3.0",
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "dev": "npx ts-node src/index.ts"
+  }
+}
