@@ -16,9 +16,19 @@ const observable$ = new Observable<string>((subscriber) => {
 // };
 
 // 3. 관찰자를 stream의 구독자로 지정
-// const subscription = observable$.subscribe(observer);
+// observable$.subscribe(observer);
 // 위의 두 실행문의 축약형이 아래의 형태이다.
-const subscription = observable$.subscribe((value) => console.log(value));
+console.log("구독 1 시작");
+observable$.subscribe((value) => console.log("구독1 : ", value));
 
-// 4. 구독 종료
-setTimeout(() => subscription.unsubscribe(), 3000);
+setTimeout(() => {
+  console.log("구독 2 시작");
+  observable$.subscribe((value) => console.log("구독2 : ", value));
+}, 1000);
+
+// 0 구독 1 시작, 구독1 : woo
+// 1000 구독 2 시작, 구독2 : woo
+// 2000 구독1 : bun
+// 3000 구독2 : bun
+// 4000 구독1 : tu
+// 5000 구독2 : tu
