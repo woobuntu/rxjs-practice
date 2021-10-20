@@ -1,26 +1,21 @@
-import { interval, Observable } from "rxjs";
+globalThis.XMLHttpRequest = require("xhr2");
 
-const observer = {
-  next: (value: number) => console.log(value),
-  complete: () => console.log("complete"),
-};
+import { forkJoin } from "rxjs";
+import { ajax } from "rxjs/ajax";
 
-// interval(1000).subscribe(observer);
+const name$ = ajax<any>("https://random-data-api.com/api/name/random_name");
 
-const interval$ = new Observable<number>((subscriber) => {
-  let count = 0;
-  const intervalId = setInterval(() => {
-    console.log("interval");
-    subscriber.next(count++);
-  }, 1000);
+const city$ = ajax<any>(
+  "https://random-data-api.com/api/address/random_address"
+);
 
-  return () => {
-    clearInterval(intervalId);
-  };
+const food$ = ajax<any>("https://random-data-api.com/api/food/random_food");
+
+forkJoin([name$, city$, food$]).subscribe({
+  next: (responses) => {
+    const [{ first_name }, { city }, { dish }] = responses.map(
+      ({ response }) => response
+    );
+    console.log(`${first_name} is from ${city} and likes to eat ${dish}`);
+  },
 });
-
-const subscription = interval$.subscribe(observer);
-
-setTimeout(() => {
-  subscription.unsubscribe();
-}, 5000);
