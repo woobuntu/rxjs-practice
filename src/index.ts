@@ -1,21 +1,33 @@
 globalThis.XMLHttpRequest = require("xhr2");
 
-import { forkJoin } from "rxjs";
-import { ajax } from "rxjs/ajax";
+import { forkJoin, Observable } from "rxjs";
 
-const name$ = ajax<any>("https://random-data-api.com/api/name/random_name");
+const a$ = new Observable((subscriber) => {
+  const timeoutId = setTimeout(() => {
+    subscriber.next("a");
+    subscriber.complete();
+  }, 5000);
+  return () => {
+    clearTimeout(timeoutId);
+    console.log("a teardown");
+  };
+});
 
-const city$ = ajax<any>(
-  "https://random-data-api.com/api/address/random_address"
-);
+const b$ = new Observable((subscriber) => {
+  const timeoutId = setTimeout(() => {
+    subscriber.error("에러");
+  }, 3000);
+  // b$가 에러가 나면, 남은 2초 동안 a$를 기다릴 이유가 없다.
+  // 따라서 b$의 error가 forkJoin의 error로 넘어간 뒤,
+  // a의 teardown과 b의 teardown이 순서대로 실행된다.
+  // 역시, Promise.all과 닮았다.
+  return () => {
+    clearTimeout(timeoutId);
+    console.log("b teardown");
+  };
+});
 
-const food$ = ajax<any>("https://random-data-api.com/api/food/random_food");
-
-forkJoin([name$, city$, food$]).subscribe({
-  next: (responses) => {
-    const [{ first_name }, { city }, { dish }] = responses.map(
-      ({ response }) => response
-    );
-    console.log(`${first_name} is from ${city} and likes to eat ${dish}`);
-  },
+forkJoin([a$, b$]).subscribe({
+  next: (values) => console.log(values),
+  error: (e) => console.error("Error : ", e),
 });
