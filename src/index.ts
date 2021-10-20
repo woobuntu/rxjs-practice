@@ -1,19 +1,28 @@
-// It needs to be available globally, before RxJS is loaded
-globalThis.XMLHttpRequest = require("xhr2");
+import { Observable, of } from "rxjs";
 
-import { ajax } from "rxjs/ajax";
+const observer = {
+  next: (value: string) => console.log(value),
+  complete: () => console.log("complete"),
+};
 
-const ajax$ = ajax<any>("https://random-data-api.com/api/coffee/random_coffee");
-// 인자로 전달된 url로 http요청을 보내는 Observable반환
+// of("woo", "bun", "tu").subscribe(observer);
 
-ajax$.subscribe({
-  next: (data) => {
-    console.log("1", data.response);
-  },
-});
+// const of$ = new Observable<string>((subscriber) => {
+//   subscriber.next("woo");
+//   subscriber.next("bun");
+//   subscriber.next("tu");
+//   subscriber.complete();
+// });
 
-ajax$.subscribe({
-  next: (data) => {
-    console.log("2", data.response);
-  },
-});
+// of$.subscribe(observer);
+
+function of$(...args: string[]): Observable<string> {
+  return new Observable<string>((subscriber) => {
+    args.forEach((arg) => {
+      subscriber.next(arg);
+    });
+    subscriber.complete();
+  });
+}
+
+of$("woo", "bun", "tu").subscribe(observer);
