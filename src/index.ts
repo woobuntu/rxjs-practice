@@ -1,28 +1,19 @@
-import { Observable, of } from "rxjs";
+import { from } from "rxjs";
 
-const observer = {
-  next: (value: string) => console.log(value),
-  complete: () => console.log("complete"),
-};
-
-// of("woo", "bun", "tu").subscribe(observer);
-
-// const of$ = new Observable<string>((subscriber) => {
-//   subscriber.next("woo");
-//   subscriber.next("bun");
-//   subscriber.next("tu");
-//   subscriber.complete();
+// from(["woo", "bun", "tu"]).subscribe({
+//   next: (value) => console.log(value),
+//   complete: () => console.log("complete"),
 // });
 
-// of$.subscribe(observer);
+const somePromise = new Promise((resolve, reject) => {
+  // resolve("Resolved");
+  reject(new Error("Rejected"));
+});
 
-function of$(...args: string[]): Observable<string> {
-  return new Observable<string>((subscriber) => {
-    args.forEach((arg) => {
-      subscriber.next(arg);
-    });
-    subscriber.complete();
-  });
-}
+const observableFromPromise$ = from(somePromise);
 
-of$("woo", "bun", "tu").subscribe(observer);
+observableFromPromise$.subscribe({
+  next: (value) => console.log(value), // resolve
+  complete: () => console.log("complete"),
+  error: (e) => console.error("Error : ", e.message), // reject
+});
