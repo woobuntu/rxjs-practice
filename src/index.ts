@@ -1,19 +1,26 @@
-import { from } from "rxjs";
+import { Observable, timer } from "rxjs";
 
-// from(["woo", "bun", "tu"]).subscribe({
-//   next: (value) => console.log(value),
-//   complete: () => console.log("complete"),
-// });
-
-const somePromise = new Promise((resolve, reject) => {
-  // resolve("Resolved");
-  reject(new Error("Rejected"));
-});
-
-const observableFromPromise$ = from(somePromise);
-
-observableFromPromise$.subscribe({
-  next: (value) => console.log(value), // resolve
+const observer = {
+  next: (value: number) => console.log(value),
   complete: () => console.log("complete"),
-  error: (e) => console.error("Error : ", e.message), // reject
+};
+
+// timer(2000).subscribe(observer);
+
+const timer$ = new Observable<number>((subscriber) => {
+  const timerId = setTimeout(() => {
+    console.log("timeout");
+    subscriber.next(0);
+    subscriber.complete();
+  }, 2000);
+
+  return () => {
+    clearTimeout(timerId);
+  };
 });
+
+const subscription = timer$.subscribe(observer);
+
+setTimeout(() => {
+  subscription.unsubscribe();
+}, 1000);
