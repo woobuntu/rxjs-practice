@@ -1,30 +1,19 @@
-import { Observable } from "rxjs";
+// It needs to be available globally, before RxJS is loaded
+globalThis.XMLHttpRequest = require("xhr2");
 
-const observable$ = new Observable<number>((subscriber) => {
-  let count = 0;
-  const intervalId = setInterval(() => {
-    subscriber.next(count++);
-  }, 1000);
+import { ajax } from "rxjs/ajax";
 
-  // teardown
-  return () => {
-    console.log("teardown");
+const ajax$ = ajax<any>("https://random-data-api.com/api/coffee/random_coffee");
+// 인자로 전달된 url로 http요청을 보내는 Observable반환
 
-    clearInterval(intervalId);
-
-    // HTTP요청을 보내는 Observable의 경우,
-    // 아직 response가 오기 전에 teardown에 이르렀을 때,
-    // 해당 요청을 취소하는 로직을 실행해야 한다.
-  };
+ajax$.subscribe({
+  next: (data) => {
+    console.log("1", data.response);
+  },
 });
 
-const subscription = observable$.subscribe({
-  next: (value) => console.log(value),
-  complete: () => console.log("complete!"),
-  error: (e) => console.error(e.message),
+ajax$.subscribe({
+  next: (data) => {
+    console.log("2", data.response);
+  },
 });
-
-setTimeout(() => {
-  console.log("Unsubscribe");
-  subscription.unsubscribe();
-}, 5000);

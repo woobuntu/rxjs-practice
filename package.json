@@ -6,9 +6,11 @@
   "author": "in uh, lee <boutime2017@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "rxjs": "^7.4.0"
+    "rxjs": "^7.4.0",
+    "xhr2": "^0.2.1"
   },
   "devDependencies": {
+    "@types/node": "^16.11.1",
     "ts-node": "^10.3.0",
     "typescript": "^4.4.4"
   },
