@@ -1,33 +1,11 @@
-globalThis.XMLHttpRequest = require("xhr2");
+import { filter, map, of, tap } from "rxjs";
 
-import { forkJoin, map } from "rxjs";
-import { ajax } from "rxjs/ajax";
-
-interface Name {
-  first_name: string;
-}
-
-interface City {
-  city: string;
-}
-
-interface Food {
-  dish: string;
-}
-
-const name$ = ajax<Name>(
-  "https://random-data-api.com/api/name/random_name"
-).pipe(map(({ response: { first_name } }) => first_name));
-
-const city$ = ajax<City>(
-  "https://random-data-api.com/api/address/random_address"
-).pipe(map(({ response: { city } }) => city));
-
-const food$ = ajax<Food>(
-  "https://random-data-api.com/api/food/random_food"
-).pipe(map(({ response: { dish } }) => dish));
-
-forkJoin([name$, city$, food$]).subscribe({
-  next: ([first_name, city, dish]) =>
-    console.log(`${first_name} is from ${city} and likes to eat ${dish}`),
-});
+of(1, 7, 3, 6, 2)
+  .pipe(
+    filter((value) => value > 5),
+    tap({ next: (value) => console.log("tap", value) }),
+    map((value) => value * 2)
+  )
+  .subscribe({
+    next: (value) => console.log(value),
+  });
