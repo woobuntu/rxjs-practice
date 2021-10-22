@@ -1,32 +1,33 @@
-import { filter, Observable } from "rxjs";
+globalThis.XMLHttpRequest = require("xhr2");
 
-interface NewsItem {
-  category: "Business" | "Sports";
-  content: string;
+import { forkJoin, map } from "rxjs";
+import { ajax } from "rxjs/ajax";
+
+interface Name {
+  first_name: string;
 }
 
-const newsFeed$ = new Observable<NewsItem>((subscriber) => {
-  setTimeout(() => {
-    subscriber.next({ category: "Business", content: "a" });
-  }, 1000);
-  setTimeout(() => {
-    subscriber.next({ category: "Sports", content: "b" });
-  }, 3000);
-  setTimeout(() => {
-    subscriber.next({ category: "Business", content: "c" });
-  }, 4000);
-  setTimeout(() => {
-    subscriber.next({ category: "Sports", content: "d" });
-  }, 6000);
-  setTimeout(() => {
-    subscriber.next({ category: "Business", content: "e" });
-  }, 7000);
-});
+interface City {
+  city: string;
+}
 
-const sportsNewsFeed$ = newsFeed$.pipe(
-  filter((item) => item.category === "Sports")
-);
+interface Food {
+  dish: string;
+}
 
-sportsNewsFeed$.subscribe({
-  next: (item: NewsItem) => console.log(item),
+const name$ = ajax<Name>(
+  "https://random-data-api.com/api/name/random_name"
+).pipe(map(({ response: { first_name } }) => first_name));
+
+const city$ = ajax<City>(
+  "https://random-data-api.com/api/address/random_address"
+).pipe(map(({ response: { city } }) => city));
+
+const food$ = ajax<Food>(
+  "https://random-data-api.com/api/food/random_food"
+).pipe(map(({ response: { dish } }) => dish));
+
+forkJoin([name$, city$, food$]).subscribe({
+  next: ([first_name, city, dish]) =>
+    console.log(`${first_name} is from ${city} and likes to eat ${dish}`),
 });
