@@ -1,11 +1,17 @@
-import { filter, map, of, tap } from "rxjs";
+import { catchError, EMPTY, Observable, of } from "rxjs";
 
-of(1, 7, 3, 6, 2)
+const failingHttpRequest = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.error(new Error("timeout"));
+  }, 3000);
+});
+
+failingHttpRequest
   .pipe(
-    filter((value) => value > 5),
-    tap({ next: (value) => console.log("tap", value) }),
-    map((value) => value * 2)
+    // catchError((error) => of(error.message))
+    catchError((error) => EMPTY)
   )
   .subscribe({
     next: (value) => console.log(value),
+    complete: () => console.log("complete"),
   });
