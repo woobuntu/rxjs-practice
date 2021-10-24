@@ -6,6 +6,7 @@
   "author": "in uh, lee <boutime2017@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.23.0",
     "rxjs": "^7.4.0",
     "xhr2": "^0.2.1"
   },
